@@ -1,114 +1,77 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-
-  const API_URL = "http://localhost:5002/api/auth";
-
-function readStoredUser() {
-  try {
-    return JSON.parse(localStorage.getItem("user")) || {};
-  } catch {
-    return {};
-  }
-}
+import { Link, useOutletContext } from "react-router-dom";
+import axios from "axios";
 
 export default function Dashboard() {
-  const navigate = useNavigate();
-  const [user, setUser] = useState(readStoredUser);
-
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/");
-  };
+  const { cartCount } = useOutletContext();
+  const [user, setUser] = useState(() => JSON.parse(localStorage.getItem("user") || "null"));
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    fetch(`${API_URL}/profile`, { headers: { Authorization: `Bearer ${token}` } })
-      .then(async (res) => {
-        if (res.status === 401) {
-          logout();
-          return;
-        }
-        if (!res.ok) return;
-        const data = await res.json();
+    axios
+      .get("/auth/me")
+      .then(({ data }) => {
         setUser(data);
         localStorage.setItem("user", JSON.stringify(data));
       })
-      .catch(() => {
-        /* server offline: keep showing the saved user */
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+      .catch(() => {});
   }, []);
-
-  const initial = (user.name || user.usn || "S").charAt(0).toUpperCase();
 
   return (
     <>
-      <nav className="navbar">
-        <div className="navbar-inner">
-          <div className="logo">
-            <div className="logo-badge">S</div>
-            <div>
-              <p className="logo-title">StudentMart</p>
-              <p className="logo-sub">Student Portal</p>
-            </div>
-          </div>
-          <div className="nav-links">
-            <button className="nav-link active" onClick={() => navigate("/dashboard")}>Dashboard</button>
-            <button className="nav-link" onClick={() => navigate("/profile")}>Profile</button>
-            <button className="btn btn-outline" onClick={logout}>Logout</button>
-          </div>
+      <div className="dash-top">
+        <div>
+          <span className="eyebrow">STUDENT WORKSPACE</span>
+          <h1>Dashboard</h1>
         </div>
-      </nav>
+        <div className="dash-badge">{cartCount}</div>
+      </div>
 
-      <main className="page">
-        <div className="dash-header">
-          <div>
-            <p className="eyebrow">Student Dashboard</p>
-            <h1>Welcome back{user.name ? `, ${user.name}` : ""}!</h1>
-            <p>Manage your student account from one place.</p>
-          </div>
+      <section className="hero">
+        <span className="eyebrow">YOUR SPACE. YOUR JOURNEY.</span>
+        <h2>Hello, {user?.usn || "Student"}! 👋</h2>
+        <p>
+          Everything you need to manage your student profile and explore StudentMart, all in one
+          place.
+        </p>
+        <Link to="/profile" className="hero-btn">
+          View my profile →
+        </Link>
+      </section>
 
-          <div className="mini-card" onClick={() => navigate("/profile")}>
-            <div className="mini-avatar">{initial}</div>
-            <div className="mini-info">
-              <strong>{user.usn || "—"}</strong>
-              <span>Edit Profile</span>
-            </div>
-            <span className="mini-arrow">→</span>
-          </div>
+      <h3 className="section-title">Your account overview</h3>
+      <div className="stat-grid">
+        <div className="stat-card">
+          <div className="icon-box">👤</div>
+          <div className="label">University Seat Number</div>
+          <div className="value">{user?.usn}</div>
+          <div className="hint">Student identification</div>
         </div>
-
-        <div className="dash-grid">
-          <section className="hero-card">
-            <p className="eyebrow">StudentMart</p>
-            <h2>Your student account</h2>
-            <p>
-              Your profile is successfully connected to StudentMart. You can manage your account
-              information from the profile section.
-            </p>
-            <button className="btn" onClick={() => navigate("/profile")}>Edit Profile</button>
-          </section>
-
-          <section className="info-stack">
-            <div className="info-card">
-              <div className="label">USN</div>
-              <div className="value">{user.usn || "—"}</div>
-              <div className="hint">Student identification number</div>
-            </div>
-            <div className="info-card">
-              <div className="label">Email</div>
-              <div className="value">{user.email || "—"}</div>
-              <div className="hint">Registered email address</div>
-            </div>
-            <div className="info-card">
-              <div className="label">Account</div>
-              <div className="value status-active">{user.status || "Active"}</div>
-              <div className="hint">Your account is active</div>
-            </div>
-          </section>
+        <div className="stat-card">
+          <div className="icon-box">✉</div>
+          <div className="label">Email address</div>
+          <div className="value">{user?.email}</div>
+          <div className="hint">Account contact</div>
         </div>
-      </main>
+      </div>
+
+      <h3 className="section-title">Quick actions</h3>
+      <div className="action-grid">
+        <Link to="/profile" className="action-card">
+          <div className="icon-box">👤</div>
+          <h3>View Profile</h3>
+          <p>See your saved student information.</p>
+        </Link>
+        <Link to="/edit-profile" className="action-card">
+          <div className="icon-box">✎</div>
+          <h3>Edit Details</h3>
+          <p>Update your USN, email, phone or address.</p>
+        </Link>
+        <Link to="/edit-profile" className="action-card">
+          <div className="icon-box">◇</div>
+          <h3>Security</h3>
+          <p>Change your account password.</p>
+        </Link>
+      </div>
     </>
   );
 }

@@ -1,0 +1,52 @@
+.pf-card {
+  max-width: 700px;
+  margin: -10px auto 0;
+  background: #fff;
+  border-radius: 24px;
+  padding: 38px 32px 34px;
+  text-align: center;
+  box-shadow: 0 8px 30px rgba(90, 80, 200, 0.06);
+}
+
+.pf-card .eyebrow {
+  font-size: 11px;
+}
+
+.pf-card h1 {
+  font-size: 30px;
+  margin: 14px 0 12px;
+}
+
+.pf-sub {
+  color: var(--muted);
+  font-size: 17px;
+  margin-bottom: 28px;
+}
+
+.pf-card .field label {
+  font-size: 13px;
+  margin-bottom: 14px;
+  margin-top: 8px;
+}
+
+.pf-card .field input,
+.pf-card .field select,
+.pf-card .field textarea {
+  background: #fff;
+  text-align: left;
+  font-size: 17px;
+  padding: 15px;
+}
+
+.pf-card .field textarea {
+  resize: vertical;
+  min-height: 124px;
+}
+
+.pf-card .field {
+  margin-bottom: 14px;
+}
+
+.pf-card .btn-gradient {
+  margin-top: 10px;
+}
